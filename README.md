@@ -3,7 +3,7 @@
 
 A full stack web application designed to help young adults navigate key life decisions including budgeting, pensions, moving out, learning resources, and career readiness.
 
-#About This Project
+# About This Project
 
 Built during the University of Surrey Green Tech Jam Hackathon — 1st place and a £1,500 prize, against 15 competing teams.
 

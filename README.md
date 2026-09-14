@@ -5,14 +5,14 @@ A full stack web application designed to help young adults navigate key life dec
 
 ## About This Project
 
-Built during the University of Surrey Green Tech Jam Hackathon — 1st place and a £1,500 prize, against 15 competing teams.
+Built during the University of Surrey Green Tech Jam Hackathon, 1st place and a £1,500 prize, against 15 competing teams.
 
 My role: Frontend Developer & Team Lead (2 sprints)
 
-Owned end-to-end delivery of the Budget Planner feature — income tracking, spend categorisation, savings goals, and a dynamic financial health score
+Owned end-to-end delivery of the Budget Planner feature, income tracking, spend categorisation, savings goals, and a dynamic financial health score
 Built the Profile and Progress Tracker feature, integrating account management and cross-feature progress into a single dashboard
 Wrote 53 automated tests, maintaining a fully passing CI/CD pipeline
-Led planning meetings, assigned tasks, and reviewed merge requests as team lead for two sprints
+Led planning meetings, assigned tasks and reviewed merge requests as team lead for two sprints
 Diagnosed and resolved backend API issues uncovered during frontend integration
 
 ## Tech Stack

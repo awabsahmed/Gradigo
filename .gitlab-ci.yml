@@ -1,0 +1,133 @@
+variables:
+  MYSQL_DATABASE: test_db
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_USER: test_user
+  MYSQL_PASSWORD: test_pass
+
+  DB_NAME: test_db
+  DB_USER: test_user
+  DB_PASSWORD: test_pass
+  DB_HOST: mysql
+  DB_PORT: "3306"
+
+  SECRET_KEY: ci-test-secret-key
+  DEBUG: "True"
+  
+  #frontends env
+  NEXT_PUBLIC_API_URL: "http://127.0.0.1:8000"
+
+stages:
+  - build
+  - lint
+  - test
+  - deploy
+
+#BACKEND JOBS
+migrations:
+  stage: build
+  image: python:3.11
+  services:
+    - name: mysql:8.0
+      alias: mysql
+      command: ["--default-authentication-plugin=mysql_native_password"]
+  before_script:
+    - apt-get update
+    - apt-get install -y gcc pkg-config libmariadb-dev mariadb-client
+    - pip install --upgrade pip
+  script:
+    - cd Backend
+    - python -m pip install -r requirements.txt
+    - echo "Waiting for MySQL..."
+    - |
+      for i in {1..60}; do
+        mysql --ssl-mode=DISABLED -h mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT 1" && break
+        echo "MySQL not ready yet..."
+        sleep 2
+      done
+    - python manage.py migrate
+    - python manage.py check
+
+Backend-lint:
+  stage: lint
+  image: python:3.11
+  before_script:
+    - pip install --upgrade pip
+  script:
+    - cd Backend
+    - python -m pip install -r requirements.txt
+    - python -m pip install flake8
+    - flake8 . --exclude=migrations,__pycache__ --show-source --statistics
+
+
+django-tests:
+  stage: test
+  image: python:3.11
+  services:
+    - name: mysql:8.0
+      alias: mysql
+  before_script:
+    - apt-get update
+    - apt-get install -y gcc pkg-config libmariadb-dev
+    - pip install --upgrade pip
+  script:
+    - cd Backend
+    - python -m pip install -r requirements.txt
+    - pytest
+
+#FRONTEND JOBS
+install-frontend:
+  stage: build
+  image: node:20
+  cache:
+    paths:
+      - Frontend/first-job-navigator/node_modules/
+  script:
+    - cd Frontend/first-job-navigator
+    - npm ci
+
+frontend-lint:
+  stage: lint
+  image: node:20
+  cache:
+    paths:
+      - Frontend/first-job-navigator/node_modules/
+  script:
+    - cd Frontend/first-job-navigator
+    - npm ci
+    - npm run lint
+
+frontend-tests:
+  stage: test
+  image: node:20
+  cache:
+    paths:
+      - Frontend/first-job-navigator/node_modules/
+  script:
+    - cd Frontend/first-job-navigator
+    - npm ci
+    - npm test
+    - npm run test:coverage
+  artifacts:
+    when: always
+    paths:
+      - Frontend/first-job-navigator/test-reports/
+    expire_in: 1 day
+
+frontend-build:
+  stage: build
+  image: node:20
+  cache:
+    paths:
+      - Frontend/first-job-navigator/node_modules/
+  script:
+    - cd Frontend/first-job-navigator
+    - npm ci
+    - npm run build
+
+#DEPLOYMENT
+deploy:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "No deployment configured!"
+  environment: production

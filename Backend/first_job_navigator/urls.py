@@ -1,0 +1,40 @@
+"""
+URL configuration for first_job_navigator project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+
+from django.contrib import admin
+from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from apps.move_out.mapbox_views import MapboxGeocodeView, MapboxStaticView
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/accounts/", include("apps.accounts.urls")),
+    path("api/budget/", include("apps.budget.urls")),
+    path("api/salary/", include("apps.calculators.urls")),
+    path("api/moveout/", include("apps.move_out.urls")),
+    path("api/learning/", include("apps.learning.urls")),
+    path("api/pension/", include("apps.pension.urls")),
+    path("api/chatbot/", include("apps.AI_chatbot.urls")),
+    path("api/mapbox/geocode", MapboxGeocodeView.as_view()),
+    path("api/mapbox/static", MapboxStaticView.as_view()),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+]
